@@ -113,7 +113,7 @@
                             <i class='fa fa-trash'></i>
                         </a>
                     </td>
-                    <!-- Modal Editarlaravel-->
+                    <!-- Modal Editar-->
 <div class="modal fade" id="modalEdit{{$persona->id}}" tabindex="-1" aria-labelledby="myModal" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
