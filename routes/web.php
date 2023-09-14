@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PersonaController;
+use App\Http\Controllers\ClientesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,5 +37,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'
 
     //Route::get('/persona',[PersonaController::class,'index']);
     Route::post('persona/{persona}', 'App\Http\Controllers\PersonaController@update')->name('persona.update');
+
+    Route::resource('clientes',ClientesController::class);
 
    });
