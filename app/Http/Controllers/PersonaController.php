@@ -102,7 +102,7 @@ class PersonaController extends Controller
         }
 
         Persona::where('id','=',$id)->update($datosPersona) ;
-        return redirect()->route('persona.index')->with('success', 'Cliente creado con éxito.');
+        return redirect()->route('persona.index')->with('success', 'Cliente creado con éxito..');
         //return $id;
     }
 
