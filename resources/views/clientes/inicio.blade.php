@@ -95,15 +95,15 @@
             <tbody>
                 
                  @foreach ($clientes as $cliente)
-                <tr>
+                <tr id="row-{{$cliente->id}}">
                     <th scope="row">{{$cliente->id}}</th>
                     
-                    <td  style="vertical-align: middle;">{{$cliente->nombre}}</td>
-                    <td  style="vertical-align: middle;">{{$cliente->email}}</td>
-                    <td  style="vertical-align: middle;">{{$cliente->telefono}}</td>
-                    <td  style="vertical-align: middle;">{{$cliente->direccion}}</td>
-                    <td  style="vertical-align: middle;">{{$cliente->ciudad}}</td>
-                    <td  style="vertical-align: middle;">{{$cliente->pais}}</td>
+                        <td  style="vertical-align: middle;">{{$cliente->nombre}}</td>
+                        <td  style="vertical-align: middle;">{{$cliente->email}}</td>
+                        <td  style="vertical-align: middle;">{{$cliente->telefono}}</td>
+                        <td  style="vertical-align: middle;">{{$cliente->direccion}}</td>
+                        <td  style="vertical-align: middle;">{{$cliente->ciudad}}</td>
+                        <td  style="vertical-align: middle;">{{$cliente->pais}}</td>
                     
                     
                     <td>
@@ -186,11 +186,7 @@
 
 @stop
 
-@if(session('success'))
-    <script>
-        alert("guardado con exito")
-    </script>
-@endif
+
 
 @section('js')
     <script> console.log('Hi!'); </script>
@@ -219,38 +215,81 @@
         
     </script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.28/dist/sweetalert2.all.min.js"></script>     
+    <script>
+        $(document).ready(function() {
+            $('.delete-person').click(function(e) {
+                e.preventDefault();
 
-<script>
-    $(document).ready(function() {
-        $('.delete-person').click(function(e) {
-            e.preventDefault();
+                var id = $(this).data('id');
 
-            var id = $(this).data('id');
+                //if (confirm('¿Estás seguro de que deseas eliminar esta persona?')) {
+                    //alertify.confirm('¿Estás seguro de que deseas eliminar esta persona?', function(){
 
-            if (confirm('¿Estás seguro de que deseas eliminar esta persona?')) {
-                $.ajax({
-                    url: '/persona/' + id,
-                    type: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
+                        Swal.fire({
+                        title: '¿Estás seguro de que deseas eliminar?',
+                        //showDenyButton: true,
+                        //showCancelButton: true,
+                        confirmButtonText: 'Eliminar',
+                        }).then((result) => {
+                        
+                            $.ajax({
+                                url: '/clientes/' + id,
+                                type: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                success: function(response) {
 
-                        //alert("se elimino registro");
-                        location.reload(true)
-                        //cargarTabla();
-                        // La solicitud de eliminación se ha completado con éxito
-                        // Aquí puedes realizar acciones adicionales, como actualizar la lista de personas o mostrar un mensaje de éxito.
-                   },
-                    error: function(xhr, status, error) {
-                        // Se produjo un error durante la solicitud de eliminación
-                        // Aquí puedes mostrar un mensaje de error o realizar acciones adicionales según sea necesario.
-                   }
-                });
-            }
+                                    //alert("se elimino registro");
+                                    //location.reload(true)
+                                    //cargarTabla();
+                                    // La solicitud de eliminación se ha completado con éxito
+                                    // Aquí puedes realizar acciones adicionales, como actualizar la lista de personas o mostrar un mensaje de éxito.
+                                    $('#row-' + id).remove();
+
+                                    // O si quieres mostrar un mensaje de éxito utilizando Alertify.js:
+                                    //alertify.success(response.message);
+                                    },
+
+                                error: function(xhr, status, error) {
+                                    // Se produjo un error durante la solicitud de eliminación
+                                    // Aquí puedes mostrar un mensaje de error o realizar acciones adicionales según sea necesario.
+                                }
+                                });
+                            });
+            });
         });
-    });
-</script>
+    </script>
+
+    @if(session('success'))
+    <!--<div class="alert alert-success">
+        {{ session('success') }}
+    </div>-->
+    
+    <script>
+        Swal.fire({
+        position: 'top-end',
+        icon: 'success',
+        title: 'Your work has been saved',
+        showConfirmButton: false,
+        timer: 1500
+        })
+    </script>
+    @endif
+
+    @if($errors->any())
+    <!--<div class="alert alert-danger">
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>-->
+    <script>
+        alert('error al crear')
+    </script>
+    @endif
 
 @stop

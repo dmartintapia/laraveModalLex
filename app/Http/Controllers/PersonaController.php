@@ -117,7 +117,7 @@ class PersonaController extends Controller
         $persona = Persona::find($id);
         //if (!$persona) {
         //    return response()->json(['error' => 'No se encontró la persona'], 404);
-        //}
+        //} 
     
         $persona->delete();
         return response()->json(['success' => 'Persona eliminada correctamente']);
