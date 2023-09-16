@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Clientes;
 use Illuminate\Http\Request;
+use App\Models\Clientes;
+use Illuminate\Database\QueryException;
+//use RealRashid\SweetAlert\Facades\Alert;
 
 class ClientesController extends Controller
 {
@@ -39,33 +41,41 @@ class ClientesController extends Controller
     public function store(Request $request)
     {
                  // Validación de datos (puedes agregar más reglas de validación según tus necesidades)
-                 $validatedData = $request->validate([
+        $validatedData = $request->validate([
                     'nombre' => 'required|string|max:255',
                     'email' => 'required|email|unique:clientes',
                     'telefono' => 'required|string|max:255',
                     'direccion' => 'required|string|max:255',
                     'ciudad' => 'required|string|max:255',
                     'pais' => 'required|string|max:255',
-                    
-                    
-                    
-                ]);
+                ]);         
         
-                       
-                // Crea un nuevo cliente con los datos validados
-                //Clientes::create($validatedData);
-        
-                // Redirige a la página de listado de clientes u otra página de tu elección
-                //return redirect()->route('clientes.index')->with('success', 'Cliente creado con éxito.');
-
                 $result = Clientes::create($validatedData);
 
                 if ($result) {
                     return redirect()->route('clientes.index')->with('success', 'Cliente creado con éxito0.');
                 } else {
                    // return redirect()->route('clientes.index')->with('error', 'Cliente creado con éxito0.');
-                    return redirect()->back()->withErrors('No se pudo crear el cliente. Por favor, verifica los datos.')->withInput();
+                    return redirect()->back()->withErrors('error','No se pudo crear el cliente. Por favor, verifica los datos.')->withInput();
+                    //
                 }
+
+               /* try {
+                    // Tu código de inserción de datos aquí
+                    return redirect()->route('clientes.index')->with('success', 'Cliente creado con éxito0.');
+                } catch (QueryException $e) {
+                    $errorCode = $e->errorInfo[1];
+                
+                    if ($errorCode === 1062) { 
+                        // 1062 es el código de error para clave única duplicada en MySQL
+                        $errorMessage = 'El correo electrónico ya existe en la base de datos.';
+                        session()->flash('error_message', $errorMessage);
+                        return redirect()->back();
+                    } else {
+                        // Otro tipo de error de base de datos, puedes manejarlo aquí
+                        // Puedes registrar un mensaje de error, redirigir al usuario, etc.
+                    }
+                }*/
                 
     }
 
@@ -100,7 +110,11 @@ class ClientesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $datosPersona = request()->except(['_token','_method']);
+        
+        Clientes::where('id','=',$id)->update($datosPersona) ;
+        return redirect()->route('clientes.index')->with('success', 'Cliente creado con éxito..');
+       
     }
 
     /**
@@ -122,9 +136,9 @@ class ClientesController extends Controller
              // Retorna una respuesta de éxito
             return response()->json(['message' => 'Persona eliminada con éxito']);
          }
- 
+         // en este caso la persona siempre va a existir
          // Retorna una respuesta de error si la persona no existe
-            return response()->json(['error' => 'No se pudo encontrar la persona'], 404);
+         //   return response()->json(['error' => 'No se pudo encontrar la persona'], 404);
      
     }
 }

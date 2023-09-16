@@ -113,7 +113,7 @@
                             <i class='fa fa-trash'></i>
                         </a>
                     </td>
-                    <!-- Modal Editar-->
+<!-- Modal Editar-->
 <div class="modal fade" id="modalEdit{{$cliente->id}}" tabindex="-1" aria-labelledby="myModal" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -134,23 +134,26 @@
                                         <input type="text" id="nombre" value="{{$cliente->nombre}}"name="nombre" class="form-control" required>
                                     </div>
                                     <div class="form-group">
-                                        <label for="apellido">Apellido:</label>
-                                        <input type="text" id="apellido" value="{{$cliente->apellido}}"name="apellido" class="form-control" required>
+                                        <label for="email">Email:</label>
+                                        <input type="email" id="email" value="{{$cliente->email}}"name="email" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="telefono">Telefono:</label>
+                                        <input type="text" id="telefono" value="{{$cliente->telefono}}" name="telefono" class="form-control" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="direccion">Dirección:</label>
                                         <input type="text" id="direccion" value="{{$cliente->direccion}}"name="direccion" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label for="email">Email:</label>
-                                        <input type="email" id="email" value="{{$cliente->email}}"name="email" class="form-control">
+                                        <label for="ciudad">Ciudad:</label>
+                                        <input type="text" id="ciudad" value="{{$cliente->ciudad}}"name="ciudad" class="form-control" required>
                                     </div>
-                                
                                     <div class="form-group">
-                                    <label for="photo">Foto</label>
-                                    <input type="file" class="form-control" id="foto" name="foto" accept="image/*" onchange="previewImage(event)">
+                                        <label for="pais">Pais:</label>
+                                        <input type="text" id="pais" value="{{$cliente->pais}}"name="pais" class="form-control">
                                     </div>
-                                    
+                                                                        
                                 
                                     <button type="submit" class="btn btn-primary">Guardar</button>
                                 </form>
@@ -189,6 +192,7 @@
 
 
 @section('js')
+
     <script> console.log('Hi!'); </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
 
@@ -228,51 +232,49 @@
                     //alertify.confirm('¿Estás seguro de que deseas eliminar esta persona?', function(){
 
                         Swal.fire({
+                        icon: 'warning',
                         title: '¿Estás seguro de que deseas eliminar?',
                         //showDenyButton: true,
                         //showCancelButton: true,
                         confirmButtonText: 'Eliminar',
                         }).then((result) => {
-                        
-                            $.ajax({
-                                url: '/clientes/' + id,
-                                type: 'DELETE',
-                                headers: {
-                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                                },
-                                success: function(response) {
-
-                                    //alert("se elimino registro");
-                                    //location.reload(true)
-                                    //cargarTabla();
-                                    // La solicitud de eliminación se ha completado con éxito
-                                    // Aquí puedes realizar acciones adicionales, como actualizar la lista de personas o mostrar un mensaje de éxito.
-                                    $('#row-' + id).remove();
-
-                                    // O si quieres mostrar un mensaje de éxito utilizando Alertify.js:
-                                    //alertify.success(response.message);
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: '/clientes/' + id,
+                                    type: 'DELETE',
+                                    headers: {
+                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                     },
+                                    success: function(response) {
 
-                                error: function(xhr, status, error) {
-                                    // Se produjo un error durante la solicitud de eliminación
-                                    // Aquí puedes mostrar un mensaje de error o realizar acciones adicionales según sea necesario.
-                                }
+                                        //alert("se elimino registro");
+                                        //location.reload(true)
+                                        //cargarTabla();
+                                        // La solicitud de eliminación se ha completado con éxito
+                                        // Aquí puedes realizar acciones adicionales, como actualizar la lista de personas o mostrar un mensaje de éxito.
+                                        $('#row-' + id).remove();
+
+                                        // O si quieres mostrar un mensaje de éxito utilizando Alertify.js:
+                                        //alertify.success(response.message);
+                                        },
+
+                                    error: function(xhr, status, error) {
+                                        // Se produjo un error durante la solicitud de eliminación
+                                        // Aquí puedes mostrar un mensaje de error o realizar acciones adicionales según sea necesario.
+                                    }
                                 });
-                            });
+                            }    
+                        });
             });
         });
     </script>
 
     @if(session('success'))
-    <!--<div class="alert alert-success">
-        {{ session('success') }}
-    </div>-->
-    
     <script>
         Swal.fire({
-        position: 'top-end',
+        //position: 'top-end',
         icon: 'success',
-        title: 'Your work has been saved',
+        title: '{{ session("success") }}',
         showConfirmButton: false,
         timer: 1500
         })
@@ -280,15 +282,18 @@
     @endif
 
     @if($errors->any())
-    <!--<div class="alert alert-danger">
-        <ul>
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>-->
+
     <script>
-        alert('error al crear')
+        //console.log('Mensaje de error:', '{{ session("error_message") }}');
+        //alert('Mensaje de error: 23232  ');
+        swal.fire({
+            title: 'Error, el mail esta repetido',
+            text:"{{session('error')}}",
+            //text: 'Mail repetido',
+            icon: 'error',
+            timer: 1500 // Controla cuánto tiempo se muestra el mensaje
+        });
+        
     </script>
     @endif
 
